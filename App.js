@@ -1,6 +1,7 @@
-import { CurrentRenderContext } from "@react-navigation/native";
 import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+
+
 
 const Agenda = () => {
   const days = [
@@ -28,7 +29,7 @@ const Agenda = () => {
       <View style={styles.date}>
         <Text>
           <Text style={styles.hoje}>Hoje</Text>
-          <Text style={styles.numbers}>, 1 fev 2020</Text>
+          <Text style={{fontSize: 24}}>, 1 fev 2020</Text>
         </Text>
       </View>
 
@@ -78,7 +79,7 @@ const Agenda = () => {
       />
 
       <TouchableOpacity style={styles.addButton}>
-        <Text style={[styles.secundaryColorBold, styles.addButtonText]}>Adicionar Refeição</Text>
+        <Text style={[styles.secundaryColorBold, {fontSize: 18}]}>Adicionar Refeição</Text>
       </TouchableOpacity>
 
     </View>
@@ -94,8 +95,10 @@ const styles = StyleSheet.create({
   },
   secundaryColorBold: {
     color: "#AADCC8",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    fontFamily: "NewYork"
    }, 
+   
   date: { 
     marginBottom: 20,
     marginLeft: 20
@@ -105,9 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 24,
     fontWeight: 900,
-  },
-  numbers : { 
-    fontSize: 24,
+    fontFamily: "NewYork"
   },
   daysContainer: {
     flexDirection: "row",
@@ -145,7 +146,6 @@ const styles = StyleSheet.create({
     padding: 5,
     
   },
-
   noEvents: {
     textAlign: "center",
     color: "#D5D5D5",

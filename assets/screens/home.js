@@ -1,8 +1,10 @@
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { Stack } from "expo-router";
 
 export default function App() {
   return (
     <View style={styles.container}>
+
       <View style={styles.date}>
         <Text>
           <Text style={styles.hoje}>Hoje</Text>

@@ -26,10 +26,7 @@
     },
     "plugins": [
       [
-        "expo-font",
-        {
-          "fonts": ["./assets/fonts/NewYork.otf"]
-        }
+        "expo-font"
       ]
     ]
   }
