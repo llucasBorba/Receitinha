@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
+import useFontsLoader from "./useFontsLoader"; // Certifique-se de ajustar o caminho do arquivo
 
+export default function App(){
 
-
-const Agenda = () => {
   const days = [
     { date: "2024-11-19", dayOfWeek: "DOM" },
     { date: "2024-11-20", dayOfWeek: "SEG" },
@@ -13,13 +13,14 @@ const Agenda = () => {
   ];
 
   const events = [
-    { id: "1", title: "Reunião com equipe", time: "10:00 AM", date: "2024-11-19" },
-    { id: "2", title: "Treino na academia", time: "15:00 PM", date: "2024-11-19" },
-    { id: "3", title: "Estudo de React Native", time: "19:00 PM", date: "2024-11-20" },
-    { id: "4", title: "Caminhada", time: "07:00 AM", date: "2024-11-21" },
+    { id: "1", title: "Almoço", date: "2024-11-19" },
+    { id: "2", title: "Lanche", date: "2024-11-19" },
+    { id: "3", title: "Pré-Treino", date: "2024-11-20" },
+    { id: "4", title: "Lanche", date: "2024-11-21" },
   ];
 
   const [selectedDay, setSelectedDay] = useState(days[0].date);
+
 
   const filteredEvents = events.filter((event) => event.date === selectedDay);
 
@@ -73,7 +74,7 @@ const Agenda = () => {
         renderItem={({ item }) => (
           <View style={styles.eventItem}>
             <Text style={styles.eventTitle}>{item.title}</Text>
-            <Text style={styles.eventTime}>{item.time}</Text>
+            <Pressable style={styles.check} />
           </View>
         )}
       />
@@ -98,7 +99,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "NewYork"
    }, 
-   
   date: { 
     marginBottom: 20,
     marginLeft: 20
@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 24,
     fontWeight: 900,
-    fontFamily: "NewYork"
   },
   daysContainer: {
     flexDirection: "row",
@@ -156,22 +155,24 @@ const styles = StyleSheet.create({
   },
   eventItem: {
     backgroundColor: "#FFF",
-    padding: 15,
-    marginVertical: 5,
-    marginHorizontal: 10,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+    marginTop:27,
+    marginHorizontal: 20,
+    padding: 10,
+    borderRadius: 20,
+    height: 90,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
   eventTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
   },
-  eventTime: {
-    fontSize: 14,
-    color: "#757575",
+  check: {
+    height: 50,
+    width: 125,
+    backgroundColor: "#00664E", 
+    borderRadius: 20
   },
   addButton: { 
     marginTop: 20,
@@ -189,4 +190,3 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Agenda;
