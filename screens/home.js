@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     marginLeft: 20
   },
   hoje: {
+    fontFamily: "NewYork",
     color: "#00664E",
     fontWeight: "800",
     fontSize: 24,
@@ -128,12 +129,13 @@ const styles = StyleSheet.create({
     width: 61,
     borderColor: "0E6E5E",
     borderWidth: 2,
-    justifyContent: "space-around"
+    justifyContent: "space-around",
   },
   dayText: {
     color: "#818181",
     fontSize: 15,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    fontFamily: "NewYork"
   },
   dateText: {
     color: "#818181",
