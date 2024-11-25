@@ -29,7 +29,7 @@ export default function Home({ navigation }) {
       <View style={styles.date}>
         <Text>
           <Text style={styles.hoje}>Hoje</Text>
-          <Text style={{ fontSize: 24 }}>, 1 fev 2020</Text>
+          <Text style={{ fontSize: 24, fontFamily: 'NewYorkMedium-Semibold'}}>, 1 fev 2020</Text>
         </Text>
       </View>
 
@@ -82,7 +82,7 @@ export default function Home({ navigation }) {
       />
 
       <TouchableOpacity style={styles.addButton}>
-        <Text style={[styles.secundaryColorBold, { fontSize: 18 }]}>Adicionar Refeição</Text>
+        <Text style={[styles.secundaryColorBold, { fontSize: 18,fontFamily: 'NewYorkMedium-Bold'}]}>Adicionar Refeição</Text>
       </TouchableOpacity>
 
     </View>
@@ -99,18 +99,17 @@ const styles = StyleSheet.create({
   secundaryColorBold: {
     color: "#AADCC8",
     fontWeight: "bold",
-    fontFamily: "NewYork"
   },
   date: {
     marginBottom: 20,
     marginLeft: 20
   },
   hoje: {
-    fontFamily: "NewYork",
     color: "#00664E",
-    fontWeight: "800",
+    fontWeight: "bolder",
     fontSize: 24,
     fontWeight: 900,
+    fontFamily: 'NewYorkMedium-Bold'
   },
   daysContainer: {
     flexDirection: "row",
@@ -135,12 +134,13 @@ const styles = StyleSheet.create({
     color: "#818181",
     fontSize: 15,
     fontWeight: "bold",
-    fontFamily: "NewYork"
+    fontFamily: 'NewYorkSmall-Bold'
   },
   dateText: {
     color: "#818181",
     fontSize: 16,
     fontWeight: "bold",
+    fontFamily: 'NewYorkSmall-Bold'
   },
   selectedDay: {
     backgroundColor: "#0E6E5E",
@@ -155,7 +155,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     flex: 1,
-    marginTop: 150
+    marginTop: 150,
+    fontFamily: 'NewYorkMedium-Bold'
   },
   eventItem: {
     backgroundColor: "#FFF",
@@ -171,6 +172,7 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontSize: 20,
     fontWeight: "bold",
+    fontFamily: 'NewYorkMedium-Bold'
   },
   check: {
     height: 50,

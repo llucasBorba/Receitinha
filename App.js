@@ -8,7 +8,10 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
 
   const [fontsLoaded, error] = useFonts({
-    'New-york': require('./assets/fonts/NewYork.otf'),
+    'NewYork': require('./assets/fonts/NewYork.otf'),
+    'NewYorkMedium-Bold': require("./assets/fonts/NewYorkMedium-Bold.otf"),
+    'NewYorkMedium-Semibold': require("./assets/fonts/NewYorkMedium-Semibold.otf"),
+    'NewYorkSmall-Bold': require("./assets/fonts/NewYorkSmall-Bold.otf")
   });
 
   useEffect(()=>{
