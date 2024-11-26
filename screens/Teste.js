@@ -7,8 +7,8 @@ export default function Teste({ navigation }) {
       <Text>Bem-vindo à Home Screen!</Text>
 
       <Button
-        title="Ir para Detalhes"
-        onPress={() => navigation.navigate('Palmeiras')}
+        title="Ir para Days"
+        onPress={() => navigation.navigate('Days')}
       />
     </View>
 

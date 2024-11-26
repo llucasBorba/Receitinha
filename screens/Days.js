@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function Home({ navigation }) {
   const [days, setDays] = useState([]);
@@ -7,38 +7,32 @@ export default function Home({ navigation }) {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Mês atual
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Ano atual
 
-  // Função para buscar dados da API
-  const fetchDaysFromAPI = async (month, year) => {
-    const apiUrl = `https://api.api-ninjas.com/v1/worldtime?timezone=UCT`; // Atualize com a URL correta
-    try {
-      const response = await fetch(apiUrl, {
-        headers: {
-          "X-Api-Key": "fWXlitNqjJ8biPDbr+lUmw==pZKpMtPqxiKmJtFa", // Substitua por sua chave da API
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        // Simula a criação de dias com base no mês selecionado
-        const daysInMonth = new Date(year, month, 0).getDate(); // Dias no mês
-        const daysArray = Array.from({ length: daysInMonth }, (_, index) => ({
-          date: `${year}-${String(month).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
-          dayOfWeek: new Date(year, month - 1, index + 1).toLocaleDateString("pt-BR", {
-            weekday: "short",
-          }).toUpperCase(),
-        }));
-        setDays(daysArray);
-        setSelectedDay(daysArray[0]?.date || null); // Seleciona o primeiro dia
-      } else {
-        Alert.alert("Erro", `Erro ao buscar dados da API: ${response.status}`);
-      }
-    } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao acessar a API.");
-    }
-  };
+  // Função para gerar os dias do mês
+// Função para gerar os dias do mês
+const generateDays = (month, year) => {
+  // Número de dias no mês atual
+  const daysInMonth = new Date(year, month, 0).getDate();
+  
+  
+
+  // Gera os dias do mês corretamente
+  const daysArray = Array.from({ length: daysInMonth}, (_, index) => {
+    const currentDate = new Date(year, month - 1, index + 1); // Base 0 para o mês
+    return {
+      date: `${year}-${String(month).padStart(2, "0")}-${String(index + 2).padStart(2, "0")}`,
+      dayOfWeek: currentDate.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase(),
+    };
+  });
+
+  setDays(daysArray);
+  setSelectedDay(daysArray[0]?.date || null); // Seleciona o primeiro dia
+};
+
+  
 
   // Atualiza os dias ao alterar o mês ou ano
   useEffect(() => {
-    fetchDaysFromAPI(selectedMonth, selectedYear);
+    generateDays(selectedMonth, selectedYear);
   }, [selectedMonth, selectedYear]);
 
   return (

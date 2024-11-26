@@ -1,69 +1,98 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
 
 export default function Home({ navigation }) {
+  const [days, setDays] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedMonth] = useState(new Date().getMonth() + 1); 
+  const [selectedYear] = useState(new Date().getFullYear()); 
 
-  const days = [
-    { date: "2024-11-19", dayOfWeek: "DOM" },
-    { date: "2024-11-20", dayOfWeek: "SEG" },
-    { date: "2024-11-21", dayOfWeek: "TER" },
-    { date: "2024-11-22", dayOfWeek: "QUA" },
-    { date: "2024-11-23", dayOfWeek: "QUI" },
-  ];
+  const generateDays = (month, year) => {
+    //Gerar 
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    const daysArray = Array.from({ length: daysInMonth }, (_, index) => {
+      const currentDate = new Date(year, month - 1, index + 1);
+      return {
+        date: `${year}-${String(month).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
+        dayOfWeek: currentDate.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase().replace(".",""),
+      };
+    });
+
+    setDays(daysArray);
+    console.log(daysArray)
+
+    const today = new Date();
+    console.log(today)
+    const todayFormatted = today.toISOString().split('T')[0]; 
+    console.log(todayFormatted)
+    const isTodayInMonth = daysArray.some(day => day.date === todayFormatted);
+    console.log(isTodayInMonth)
+    setSelectedDay(todayFormatted);
+
+  };
+
+  useEffect(() => {
+    generateDays(selectedMonth, selectedYear);
+  }, [selectedMonth, selectedYear]);
 
   const events = [
-    { id: "1", title: "Almoço", date: "2024-11-19" },
-    { id: "2", title: "Lanche", date: "2024-11-19" },
-    { id: "3", title: "Pré-Treino", date: "2024-11-20" },
-    { id: "4", title: "Lanche", date: "2024-11-21" },
+    { id: "1", title: "Almoço", date: "2024-11-20" },
+    { id: "2", title: "Lanche", date: "2024-11-20" },
+    { id: "3", title: "Pré-Treino", date: "2024-11-21" },
+    { id: "4", title: "Lanche", date: "2024-11-22" },
   ];
-
-  const [selectedDay, setSelectedDay] = useState(days[0].date);
-
 
   const filteredEvents = events.filter((event) => event.date === selectedDay);
 
   return (
     <View style={styles.container}>
-
+      {/* Título e data de hoje */}
       <View style={styles.date}>
         <Text>
           <Text style={styles.hoje}>Hoje</Text>
-          <Text style={{ fontSize: 24, fontFamily: 'NewYorkMedium-Semibold'}}>, 1 fev 2020</Text>
+          <Text style={{ fontSize: 24, fontFamily: "NewYorkMedium-Semibold" }}>
+            , {new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" }).replace(".","")}
+          </Text>
         </Text>
       </View>
 
-
       <View style={styles.daysContainer}>
-        {days.map((day, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.dayItem,
-              selectedDay === day.date && styles.selectedDay,
-            ]}
-            onPress={() => setSelectedDay(day.date)}
-          >
-            <Text
+        <FlatList
+          data={days}
+          horizontal
+          keyExtractor={(item) => item.date}
+          renderItem={({ item }) => (
+            <TouchableOpacity
               style={[
-                styles.dayText,
-                selectedDay === day.date && styles.secundaryColorBold
+                styles.dayItem,
+                selectedDay === item.date && styles.selectedDay,
               ]}
+              onPress={() => setSelectedDay(item.date)}
             >
-              {day.dayOfWeek}
-            </Text>
-            <Text
-              style={[
-                styles.dateText,
-                selectedDay === day.date && styles.secundaryColorBold
-              ]}
-            >
-              {new Date(day.date).getDate()}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={[
+                  styles.dayText,
+                  selectedDay === item.date && styles.secundaryColorBold,
+                ]}
+              >
+                {item.dayOfWeek}
+              </Text>
+              <Text
+                style={[
+                  styles.dateText,
+                  selectedDay === item.date && styles.secundaryColorBold,
+                ]}
+              >
+                {new Date(item.date).getDate()}
+              </Text>
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
       </View>
 
+      {/* Lista de eventos */}
       <FlatList
         data={filteredEvents}
         keyExtractor={(item) => item.id}
@@ -73,7 +102,7 @@ export default function Home({ navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.eventItem}
-            onPress={() => navigation.navigate('Teste')}
+            onPress={() => navigation.navigate("Teste")}
           >
             <Text style={styles.eventTitle}>{item.title}</Text>
             <Pressable style={styles.check} />
@@ -81,20 +110,21 @@ export default function Home({ navigation }) {
         )}
       />
 
+      {/* Botão de adicionar */}
       <TouchableOpacity style={styles.addButton}>
-        <Text style={[styles.secundaryColorBold, { fontSize: 18,fontFamily: 'NewYorkMedium-Bold'}]}>Adicionar Refeição</Text>
+        <Text style={[styles.secundaryColorBold, { fontSize: 18, fontFamily: "NewYorkMedium-Bold" }]}>
+          Adicionar Refeição
+        </Text>
       </TouchableOpacity>
-
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 70,
     backgroundColor: "#f5f5f5",
-
   },
   secundaryColorBold: {
     color: "#AADCC8",
@@ -102,14 +132,14 @@ const styles = StyleSheet.create({
   },
   date: {
     marginBottom: 20,
-    marginLeft: 20
+    marginLeft: 20,
   },
   hoje: {
     color: "#00664E",
     fontWeight: "bolder",
     fontSize: 24,
-    fontWeight: 900,
-    fontFamily: 'NewYorkMedium-Bold'
+    fontWeight: "900",
+    fontFamily: "NewYorkMedium-Bold",
   },
   daysContainer: {
     flexDirection: "row",
@@ -119,35 +149,35 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 10,
     height: 150,
-    padding: 12
+    padding: 12,
   },
   dayItem: {
     alignItems: "center",
     borderRadius: 30,
     height: 99,
     width: 61,
-    borderColor: "0E6E5E",
+    borderColor: "#0E6E5E",
     borderWidth: 2,
     justifyContent: "space-around",
+    marginRight: 10,
   },
   dayText: {
     color: "#818181",
     fontSize: 15,
     fontWeight: "bold",
-    fontFamily: 'NewYorkSmall-Bold'
+    fontFamily: "NewYorkSmall-Bold",
   },
   dateText: {
     color: "#818181",
     fontSize: 16,
     fontWeight: "bold",
-    fontFamily: 'NewYorkSmall-Bold'
+    fontFamily: "NewYorkSmall-Bold",
   },
   selectedDay: {
     backgroundColor: "#0E6E5E",
     borderRadius: 30,
     borderWidth: 0,
     padding: 5,
-
   },
   noEvents: {
     textAlign: "center",
@@ -156,7 +186,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flex: 1,
     marginTop: 150,
-    fontFamily: 'NewYorkMedium-Bold'
+    fontFamily: "NewYorkMedium-Bold",
   },
   eventItem: {
     backgroundColor: "#FFF",
@@ -167,18 +197,18 @@ const styles = StyleSheet.create({
     height: 90,
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   eventTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    fontFamily: 'NewYorkMedium-Bold'
+    fontFamily: "NewYorkMedium-Bold",
   },
   check: {
     height: 50,
     width: 125,
     backgroundColor: "#00664E",
-    borderRadius: 20
+    borderRadius: 20,
   },
   addButton: {
     marginTop: 20,
@@ -189,9 +219,6 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     width: 354,
     height: 52,
-    alignSelf: "center"
+    alignSelf: "center",
   },
-  addButtonText: {
-    fontSize: 18,
-  }
 });
