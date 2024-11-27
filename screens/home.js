@@ -1,49 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
+import HorizontalCalendar from "../components/HorizontalCalendar";
 
 export default function Home({ navigation }) {
   const [days, setDays] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
-  const [selectedMonth] = useState(new Date().getMonth() + 1); 
-  const [selectedYear] = useState(new Date().getFullYear()); 
+  const [selectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear] = useState(new Date().getFullYear());
+  
+  useEffect(() => {
+    generateDays(selectedMonth, selectedYear);
+  }, [selectedMonth, selectedYear]);
+
 
   const generateDays = (month, year) => {
-    //Gerar 
-    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInMonth = new Date(year, month - 1, 0).getDate();
 
     const daysArray = Array.from({ length: daysInMonth }, (_, index) => {
       const currentDate = new Date(year, month - 1, index + 1);
       return {
         date: `${year}-${String(month).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
-        dayOfWeek: currentDate.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase().replace(".",""),
+        dayOfWeek: currentDate.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase().replace(".", "")
       };
+
     });
 
     setDays(daysArray);
-    console.log(daysArray)
 
     const today = new Date();
-    console.log(today)
-    const todayFormatted = today.toISOString().split('T')[0]; 
-    console.log(todayFormatted)
-    const isTodayInMonth = daysArray.some(day => day.date === todayFormatted);
-    console.log(isTodayInMonth)
+    const todayFormatted = today.toISOString().split('T')[0];
     setSelectedDay(todayFormatted);
-
   };
 
-  useEffect(() => {
-    generateDays(selectedMonth, selectedYear);
-  }, [selectedMonth, selectedYear]);
-
-  const events = [
-    { id: "1", title: "Almoço", date: "2024-11-20" },
-    { id: "2", title: "Lanche", date: "2024-11-20" },
+  const meals = [
+    { id: "1", title: "Almoço", date: "2024-11-27" },
+    { id: "2", title: "Lanche", date: "2024-11-27" },
     { id: "3", title: "Pré-Treino", date: "2024-11-21" },
     { id: "4", title: "Lanche", date: "2024-11-22" },
   ];
 
-  const filteredEvents = events.filter((event) => event.date === selectedDay);
+  const filteredMeals = meals.filter((meal) => meal.date === selectedDay);
 
   return (
     <View style={styles.container}>
@@ -52,49 +48,21 @@ export default function Home({ navigation }) {
         <Text>
           <Text style={styles.hoje}>Hoje</Text>
           <Text style={{ fontSize: 24, fontFamily: "NewYorkMedium-Semibold" }}>
-            , {new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" }).replace(".","")}
+            , {new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" }).replace(".", "")}
           </Text>
         </Text>
       </View>
 
-      <View style={styles.daysContainer}>
-        <FlatList
-          data={days}
-          horizontal
-          keyExtractor={(item) => item.date}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.dayItem,
-                selectedDay === item.date && styles.selectedDay,
-              ]}
-              onPress={() => setSelectedDay(item.date)}
-            >
-              <Text
-                style={[
-                  styles.dayText,
-                  selectedDay === item.date && styles.secundaryColorBold,
-                ]}
-              >
-                {item.dayOfWeek}
-              </Text>
-              <Text
-                style={[
-                  styles.dateText,
-                  selectedDay === item.date && styles.secundaryColorBold,
-                ]}
-              >
-                {new Date(item.date).getDate()}
-              </Text>
-            </TouchableOpacity>
-          )}
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
+      <HorizontalCalendar 
+        days={days}
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+        styles={styles}
+      />
 
       {/* Lista de eventos */}
       <FlatList
-        data={filteredEvents}
+        data={filteredMeals}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           <Text style={styles.noEvents}>Adicione uma refeição para começar...</Text>
@@ -110,12 +78,14 @@ export default function Home({ navigation }) {
         )}
       />
 
-      {/* Botão de adicionar */}
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate("Teste")}>
         <Text style={[styles.secundaryColorBold, { fontSize: 18, fontFamily: "NewYorkMedium-Bold" }]}>
           Adicionar Refeição
         </Text>
       </TouchableOpacity>
+      
     </View>
   );
 }
@@ -140,44 +110,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "900",
     fontFamily: "NewYorkMedium-Bold",
-  },
-  daysContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 10,
-    marginHorizontal: 10,
-    height: 150,
-    padding: 12,
-  },
-  dayItem: {
-    alignItems: "center",
-    borderRadius: 30,
-    height: 99,
-    width: 61,
-    borderColor: "#0E6E5E",
-    borderWidth: 2,
-    justifyContent: "space-around",
-    marginRight: 10,
-  },
-  dayText: {
-    color: "#818181",
-    fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "NewYorkSmall-Bold",
-  },
-  dateText: {
-    color: "#818181",
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "NewYorkSmall-Bold",
-  },
-  selectedDay: {
-    backgroundColor: "#0E6E5E",
-    borderRadius: 30,
-    borderWidth: 0,
-    padding: 5,
   },
   noEvents: {
     textAlign: "center",
