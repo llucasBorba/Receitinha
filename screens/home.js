@@ -1,91 +1,145 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Button } from  "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import HorizontalCalendar from "../components/HorizontalCalendar";
+import Today from "../components/Today";
+import MealsList from "../components/MealsList";
 
 export default function Home({ navigation }) {
   const [days, setDays] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear] = useState(new Date().getFullYear());
-  
+  const [meals, setMeals] = useState([]);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [newMealTitle, setNewMealTitle] = useState("");
+
   useEffect(() => {
     generateDays(selectedMonth, selectedYear);
+    loadMeals();
   }, [selectedMonth, selectedYear]);
 
-
   const generateDays = (month, year) => {
-    const daysInMonth = new Date(year, month - 1, 0).getDate();
+    const daysInMonth = new Date(year, month, 0).getDate();
 
     const daysArray = Array.from({ length: daysInMonth }, (_, index) => {
       const currentDate = new Date(year, month - 1, index + 1);
       return {
-        date: `${year}-${String(month).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
-        dayOfWeek: currentDate.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase().replace(".", "")
+        date: `${year}-${String(month).padStart(2, "0")}-${String(
+          index + 1
+        ).padStart(2, "0")}`,
+        dayOfWeek: currentDate
+          .toLocaleDateString("pt-BR", { weekday: "short" })
+          .toUpperCase()
+          .replace(".", ""),
       };
-
     });
 
     setDays(daysArray);
 
     const today = new Date();
-    const todayFormatted = today.toISOString().split('T')[0];
+    const todayFormatted = today.toISOString().split("T")[0];
     setSelectedDay(todayFormatted);
   };
 
-  const meals = [
-    { id: "1", title: "Almoço", date: "2024-11-27" },
-    { id: "2", title: "Lanche", date: "2024-11-27" },
-    { id: "3", title: "Pré-Treino", date: "2024-11-21" },
-    { id: "4", title: "Lanche", date: "2024-11-22" },
-  ];
+  const loadMeals = async () => {
+    try {
+      const storedMeals = await AsyncStorage.getItem("@meals");
+      if (storedMeals) {
+        setMeals(JSON.parse(storedMeals));
+      }
+    } catch (error) {
+      console.error("Erro ao carregar refeições:", error);
+    }
+  };
+
+  const saveMeals = async (updatedMeals) => {
+    try {
+      await AsyncStorage.setItem("@meals", JSON.stringify(updatedMeals));
+    } catch (error) {
+      console.error("Erro ao salvar refeições:", error);
+    }
+  };
+
+  const handleDeleteMeal = async (id) => {
+    const updatedMeals = meals.filter((meal) => meal.id !== id);
+    setMeals(updatedMeals);
+    await saveMeals(updatedMeals); // Atualiza o AsyncStorage
+  };
+  
+
+  const handleAddMeal = () => {
+    if (newMealTitle.trim()) {
+      const updatedMeals = [
+        ...meals,
+        {
+          id: (meals.length + 1).toString(),
+          title: newMealTitle,
+          date: selectedDay,
+        },
+      ];
+      setMeals(updatedMeals);
+      saveMeals(updatedMeals); 
+      setNewMealTitle("");
+      setModalVisible(false);
+    }
+  };
 
   const filteredMeals = meals.filter((meal) => meal.date === selectedDay);
 
   return (
     <View style={styles.container}>
       {/* Título e data de hoje */}
-      <View style={styles.date}>
-        <Text>
-          <Text style={styles.hoje}>Hoje</Text>
-          <Text style={{ fontSize: 24, fontFamily: "NewYorkMedium-Semibold" }}>
-            , {new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" }).replace(".", "")}
-          </Text>
-        </Text>
-      </View>
+      <Today />
 
-      <HorizontalCalendar 
+      <HorizontalCalendar
         days={days}
         selectedDay={selectedDay}
         setSelectedDay={setSelectedDay}
         styles={styles}
       />
 
-      {/* Lista de eventos */}
-      <FlatList
-        data={filteredMeals}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={
-          <Text style={styles.noEvents}>Adicione uma refeição para começar...</Text>
-        }
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.eventItem}
-            onPress={() => navigation.navigate("Teste")}
-          >
-            <Text style={styles.eventTitle}>{item.title}</Text>
-            <Pressable style={styles.check} />
-          </TouchableOpacity>
-        )}
-      />
+      {/* Lista de refeições */}
+      <MealsList filteredMeals={filteredMeals} navigation={navigation} handleDeleteMeal={handleDeleteMeal}/>
 
+      {/* Botão para adicionar refeição */}
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate("Teste")}>
-        <Text style={[styles.secundaryColorBold, { fontSize: 18, fontFamily: "NewYorkMedium-Bold" }]}>
+        onPress={() => setModalVisible(true)}
+      >
+        <Text
+          style={[
+            styles.secundaryColorBold,
+            { fontSize: 18, fontFamily: "NewYorkMedium-Bold" },
+          ]}
+        >
           Adicionar Refeição
         </Text>
       </TouchableOpacity>
-      
+
+      {/* Modal para adicionar refeição */}
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Adicionar Nova Refeição</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nome da Refeição"
+              value={newMealTitle}
+              onChangeText={setNewMealTitle}
+            />
+            <View style={styles.modalButtons}>
+              <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+              <Button title="Adicionar" onPress={handleAddMeal} />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -100,48 +154,6 @@ const styles = StyleSheet.create({
     color: "#AADCC8",
     fontWeight: "bold",
   },
-  date: {
-    marginBottom: 20,
-    marginLeft: 20,
-  },
-  hoje: {
-    color: "#00664E",
-    fontWeight: "bolder",
-    fontSize: 24,
-    fontWeight: "900",
-    fontFamily: "NewYorkMedium-Bold",
-  },
-  noEvents: {
-    textAlign: "center",
-    color: "#D5D5D5",
-    fontSize: 24,
-    fontWeight: "bold",
-    flex: 1,
-    marginTop: 150,
-    fontFamily: "NewYorkMedium-Bold",
-  },
-  eventItem: {
-    backgroundColor: "#FFF",
-    marginTop: 27,
-    marginHorizontal: 20,
-    padding: 10,
-    borderRadius: 20,
-    height: 90,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  eventTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    fontFamily: "NewYorkMedium-Bold",
-  },
-  check: {
-    height: 50,
-    width: 125,
-    backgroundColor: "#00664E",
-    borderRadius: 20,
-  },
   addButton: {
     marginTop: 20,
     backgroundColor: "#00664E",
@@ -152,5 +164,37 @@ const styles = StyleSheet.create({
     width: 354,
     height: 52,
     alignSelf: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: 300,
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  input: {
+    width: "100%",
+    height: 40,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
 });
