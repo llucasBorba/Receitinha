@@ -1,5 +1,6 @@
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
 import React from 'react'
+import { handleDeleteMeal } from "../utils/crudMeals";
 
 export default function MealsList({filteredMeals, navigation, handleDeleteMeal}) {
   return (

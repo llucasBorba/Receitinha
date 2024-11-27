@@ -4,6 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import HorizontalCalendar from "../components/HorizontalCalendar";
 import Today from "../components/Today";
 import MealsList from "../components/MealsList";
+import { generateDays } from "../utils/generateDays";
+import { loadMeals, saveMeals, handleDeleteMeal } from "../utils/crudMeals";
 
 export default function Home({ navigation }) {
   const [days, setDays] = useState([]);
@@ -15,51 +17,28 @@ export default function Home({ navigation }) {
   const [newMealTitle, setNewMealTitle] = useState("");
 
   useEffect(() => {
-    generateDays(selectedMonth, selectedYear);
-    loadMeals();
+    generateDays(selectedMonth, selectedYear, setDays, setSelectedDay);
+    loadMeals(setMeals);
   }, [selectedMonth, selectedYear]);
 
-  const generateDays = (month, year) => {
-    const daysInMonth = new Date(year, month, 0).getDate();
+  // const loadMeals = async () => {
+  //   try {
+  //     const storedMeals = await AsyncStorage.getItem("@meals");
+  //     if (storedMeals) {
+  //       setMeals(JSON.parse(storedMeals));
+  //     }
+  //   } catch (error) {
+  //     console.error("Erro ao carregar refeições:", error);
+  //   }
+  // };
 
-    const daysArray = Array.from({ length: daysInMonth }, (_, index) => {
-      const currentDate = new Date(year, month - 1, index + 1);
-      return {
-        date: `${year}-${String(month).padStart(2, "0")}-${String(
-          index + 1
-        ).padStart(2, "0")}`,
-        dayOfWeek: currentDate
-          .toLocaleDateString("pt-BR", { weekday: "short" })
-          .toUpperCase()
-          .replace(".", ""),
-      };
-    });
-
-    setDays(daysArray);
-
-    const today = new Date();
-    const todayFormatted = today.toISOString().split("T")[0];
-    setSelectedDay(todayFormatted);
-  };
-
-  const loadMeals = async () => {
-    try {
-      const storedMeals = await AsyncStorage.getItem("@meals");
-      if (storedMeals) {
-        setMeals(JSON.parse(storedMeals));
-      }
-    } catch (error) {
-      console.error("Erro ao carregar refeições:", error);
-    }
-  };
-
-  const saveMeals = async (updatedMeals) => {
-    try {
-      await AsyncStorage.setItem("@meals", JSON.stringify(updatedMeals));
-    } catch (error) {
-      console.error("Erro ao salvar refeições:", error);
-    }
-  };
+  // const saveMeals = async (updatedMeals) => {
+  //   try {
+  //     await AsyncStorage.setItem("@meals", JSON.stringify(updatedMeals));
+  //   } catch (error) {
+  //     console.error("Erro ao salvar refeições:", error);
+  //   }
+  // };
 
   const handleDeleteMeal = async (id) => {
     const updatedMeals = meals.filter((meal) => meal.id !== id);
