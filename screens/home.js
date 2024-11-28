@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Button } from  "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Button, Pressable } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HorizontalCalendar from "../components/HorizontalCalendar";
 import Today from "../components/Today";
@@ -45,7 +45,7 @@ export default function Home({ navigation }) {
     setMeals(updatedMeals);
     await saveMeals(updatedMeals); // Atualiza o AsyncStorage
   };
-  
+
 
   const handleAddMeal = () => {
     if (newMealTitle.trim()) {
@@ -58,7 +58,7 @@ export default function Home({ navigation }) {
         },
       ];
       setMeals(updatedMeals);
-      saveMeals(updatedMeals); 
+      saveMeals(updatedMeals);
       setNewMealTitle("");
       setModalVisible(false);
     }
@@ -79,7 +79,7 @@ export default function Home({ navigation }) {
       />
 
       {/* Lista de refeições */}
-      <MealsList filteredMeals={filteredMeals} navigation={navigation} handleDeleteMeal={handleDeleteMeal}/>
+      <MealsList filteredMeals={filteredMeals} navigation={navigation} handleDeleteMeal={handleDeleteMeal} />
 
       {/* Botão para adicionar refeição */}
       <TouchableOpacity
@@ -105,7 +105,7 @@ export default function Home({ navigation }) {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Adicionar Nova Refeição</Text>
+            <Text style={styles.modalTitle}>Vai comer o que?</Text>
             <TextInput
               style={styles.input}
               placeholder="Nome da Refeição"
@@ -113,8 +113,21 @@ export default function Home({ navigation }) {
               onChangeText={setNewMealTitle}
             />
             <View style={styles.modalButtons}>
-              <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-              <Button title="Adicionar" onPress={handleAddMeal} />
+
+              <Pressable onPress={() => setModalVisible(false)} style={styles.button}>
+                <Text 
+                style={{fontFamily:"NewYorkSmall-Bold", fontSize: 17, color: "#AADCC8" }}>
+                  Cancelar
+                </Text>
+              </Pressable>
+
+              <Pressable onPress={handleAddMeal} style={styles.button}>
+                <Text 
+                style={{fontFamily:"NewYorkSmall-Bold", fontSize: 17, color: "#AADCC8" }}>
+                  Adicionar
+                  </Text>
+              </Pressable>
+
             </View>
           </View>
         </View>
@@ -151,11 +164,13 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    width: 300,
+    width: "100%",
+    height: "45%",
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    marginTop: 650
   },
   modalTitle: {
     fontSize: 18,
@@ -165,15 +180,26 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     height: 40,
-    borderColor: "#ddd",
+    borderColor: "#99999",
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 20,
+    fontFamily: "NewYorkSmall-Bold",
+    fontSize: 19
   },
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
   },
+  button: { 
+    backgroundColor: "#00664E",
+    width: 150,
+    height: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    marginTop: 30
+  }
 });
