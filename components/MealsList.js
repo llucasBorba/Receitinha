@@ -1,6 +1,5 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
+import {Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
 import React from 'react'
-import { handleDeleteMeal } from "../utils/crudMeals";
 
 export default function MealsList({filteredMeals, navigation, handleDeleteMeal}) {
   return (
@@ -8,7 +7,7 @@ export default function MealsList({filteredMeals, navigation, handleDeleteMeal})
         data={filteredMeals}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
-          <Text style={styles.noEvents}>Adicione uma refeição para começar...</Text>
+          <Text style={styles.noEvents}> Saco vazio não para em pé! {"\n"} Adicione uma refeição para começar...</Text>
         }
         renderItem={({ item }) => (
           <TouchableOpacity

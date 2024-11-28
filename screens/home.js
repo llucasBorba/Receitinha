@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Button, Pressable } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Pressable } from "react-native";
 import HorizontalCalendar from "../components/HorizontalCalendar";
 import Today from "../components/Today";
 import MealsList from "../components/MealsList";
 import { generateDays } from "../utils/generateDays";
-import { loadMeals, saveMeals, handleDeleteMeal } from "../utils/crudMeals";
+import { loadMeals, saveMeals } from "../utils/crudMeals";
 
 export default function Home({ navigation }) {
   const [days, setDays] = useState([]);
@@ -21,29 +20,10 @@ export default function Home({ navigation }) {
     loadMeals(setMeals);
   }, [selectedMonth, selectedYear]);
 
-  // const loadMeals = async () => {
-  //   try {
-  //     const storedMeals = await AsyncStorage.getItem("@meals");
-  //     if (storedMeals) {
-  //       setMeals(JSON.parse(storedMeals));
-  //     }
-  //   } catch (error) {
-  //     console.error("Erro ao carregar refeições:", error);
-  //   }
-  // };
-
-  // const saveMeals = async (updatedMeals) => {
-  //   try {
-  //     await AsyncStorage.setItem("@meals", JSON.stringify(updatedMeals));
-  //   } catch (error) {
-  //     console.error("Erro ao salvar refeições:", error);
-  //   }
-  // };
-
   const handleDeleteMeal = async (id) => {
     const updatedMeals = meals.filter((meal) => meal.id !== id);
     setMeals(updatedMeals);
-    await saveMeals(updatedMeals); // Atualiza o AsyncStorage
+    await saveMeals(updatedMeals); 
   };
 
 
@@ -68,9 +48,11 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
+
       {/* Título e data de hoje */}
       <Today />
 
+      {/* Lista de Dias*/}
       <HorizontalCalendar
         days={days}
         selectedDay={selectedDay}
@@ -79,7 +61,7 @@ export default function Home({ navigation }) {
       />
 
       {/* Lista de refeições */}
-      <MealsList filteredMeals={filteredMeals} navigation={navigation} handleDeleteMeal={handleDeleteMeal} />
+      <MealsList filteredMeals={filteredMeals} navigation={navigation} handleDeleteMeal={handleDeleteMeal} setDays={setDays}/>
 
       {/* Botão para adicionar refeição */}
       <TouchableOpacity
